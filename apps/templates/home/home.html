@@ -2,9 +2,11 @@
 
 <!-- Specific Page CSS goes HERE  -->
 {% block stylesheets %}{% endblock stylesheets %} {% block content %}
-<form>
-    <div class="row">
 
+<form method="POST" class="post-form" enctype="multipart/form-data">
+
+    {% csrf_token %} {{ form.as_p }}
+    <div class="row">
         <div class="col-12">
             <div class="card card-chart">
                 <div class="card-header ">
@@ -112,7 +114,7 @@
         </div>
     </div>
     <center>
-        <button type="submit" name="register" class="btn btn-fill btn-primary">Submit</button> {% endblock content %}
+        <button type="submit" name="upload" class="btn btn-fill btn-primary">Submit</button> {% endblock content %}
     </center>
 </form>
 <!-- Specific Page JS goes HERE  -->
