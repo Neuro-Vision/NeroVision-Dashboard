@@ -58,3 +58,13 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'password1', 'password2')
+
+
+class InputForm(forms.Form):
+    flair = forms.FileField(required=True)
+
+    t1 = forms.FileField( required=True)
+
+    t2 = forms.FileField( required=True)
+        
+    t1_ce = forms.FileField(required=True)

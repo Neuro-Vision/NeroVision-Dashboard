@@ -5,7 +5,7 @@
 
 <form method="POST" class="post-form" enctype="multipart/form-data">
 
-    {% csrf_token %} {{ form.as_p }}
+    {% csrf_token %}
     <div class="row">
         <div class="col-12">
             <div class="card card-chart">
@@ -17,11 +17,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- <div class="card-body">
-                <div class="chart-area">
-                    <canvas id="chartBig1"></canvas>
-                </div>
-            </div> -->
             </div>
         </div>
 
@@ -38,9 +33,25 @@
                         <div class="col-md-11 px-md-1">
 
                             <div class="">
-                                <label></label>
+                                <label></label> {{form.flair}}
+                            </div><br>
+                        </div>
+                    </div>
+                </center>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card card-chart">
+                <div class="card-header">
+                    <h3 class="card-title">T 1</h3>
+                    <h5 class="card-category">Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.</h5>
+                </div>
+                <center>
+                    <div class="">
+                        <div class="col-md-11 px-md-1">
 
-                                <input class=" " id=" " name="password " required=" " type="file">
+                            <div class="">
+                                <label></label> {{form.t1}}
 
                             </div><br>
                         </div>
@@ -51,7 +62,7 @@
         <div class="col-lg-6">
             <div class="card card-chart">
                 <div class="card-header">
-                    <h3 class="card-title">T1</h3>
+                    <h3 class="card-title">T 2</h3>
                     <h5 class="card-category">Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.</h5>
                 </div>
                 <center>
@@ -59,31 +70,7 @@
                         <div class="col-md-11 px-md-1">
 
                             <div class="">
-                                <label></label>
-
-                                <input class=" " id=" " name="password " required=" " type="file">
-
-                            </div><br>
-                        </div>
-                    </div>
-                </center>
-            </div>
-        </div>
-        <div class="col-lg-6">
-            <div class="card card-chart">
-                <div class="card-header">
-                    <h3 class="card-title">T2</h3>
-                    <h5 class="card-category">Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.</h5>
-                </div>
-                <center>
-                    <div class="">
-                        <div class="col-md-11 px-md-1">
-
-                            <div class="">
-                                <label></label>
-
-                                <input class=" " id=" " name="password " required=" " type="file">
-
+                                <label></label> {{form.t2}}
                             </div><br>
                         </div>
                     </div>
@@ -94,7 +81,7 @@
         <div class="col-lg-6">
             <div class="card card-chart">
                 <div class="card-header">
-                    <h3 class="card-title">T1-ce</h3>
+                    <h3 class="card-title">T 1-ce</h3>
                     <h5 class="card-category">Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.</h5>
                 </div>
                 <center>
@@ -102,10 +89,7 @@
                         <div class="col-md-11 px-md-1">
 
                             <div class="">
-                                <label></label>
-
-                                <input class=" " id=" " name="password " required=" " type="file">
-
+                                <label></label> {{form.t1_ce}}
                             </div><br>
                         </div>
                     </div>
