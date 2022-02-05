@@ -102,45 +102,51 @@ def dashboard(request):
     msg = None # to display any message if wrong input or any
     dummy = [] 
 
+    platform = "local"
+
     if request.method == "POST":
         #If form reques method is post then load the form with post and file requests
         form = InputForm(request.POST,request.FILES)
 
         if form.is_valid():
             # iterate over FILES object to get all filename
+            print(request.FILES)
+            if platform == "local" :
+                for filename in request.FILES:
+                    print(filename)
+                    f = handle_uploaded_file(request.FILES[filename])
+                    nii_file = nib.load("apps/static/upload/"+f)
+                    dummy.append(nii_file.get_fdata()) # it gets data from loaded nii file
+                    filenames.append(f)    
 
-            for filename in request.FILES:
-                print(filename)
-                f = handle_uploaded_file(request.FILES[filename])
-                nii_file = nib.load("apps/static/upload/"+f)
-                dummy.append(nii_file.get_fdata())
-                filenames.append(f)    
+                print(filenames)
 
-            print(filenames)
+                # unet = UNetV2()
 
-            unet = UNetV2()
+                # prediction = unet.predict(filenames)['Prediction'][0]
+                # print(type(prediction))
+                # # print(prediction)
+                # prediction = (prediction).squeeze().cpu().detach().numpy()
+                # prediction = np.moveaxis(prediction, (0, 1, 2, 3), (0, 3, 2, 1))
+                # wt, tc, et = prediction
+                # print(wt.shape, tc.shape, et.shape)
+                # prediction = (wt + tc + et)
+                # prediction = np.clip(prediction, 0, 1)
+                # print(prediction.shape)
+                # print(np.unique(prediction))
+                # og = nib.load('segmentation/static/upload/flair.nii')
+                # nft_img = nib.Nifti1Image(prediction, og.affine)
+                # nib.save(nft_img, 'Dashboard/apps/static/upload/predicted'  + '.nii.gz')
 
-            prediction = unet.predict(filename)['Prediction'][0]
-            print(type(prediction))
-            # print(prediction)
-            prediction = (prediction).squeeze().cpu().detach().numpy()
-            prediction = np.moveaxis(prediction, (0, 1, 2, 3), (0, 3, 2, 1))
-            wt, tc, et = prediction
-            print(wt.shape, tc.shape, et.shape)
-            prediction = (wt + tc + et)
-            prediction = np.clip(prediction, 0, 1)
-            print(prediction.shape)
-            print(np.unique(prediction))
-            og = nib.load('segmentation/static/upload/flair.nii')
-            nft_img = nib.Nifti1Image(prediction, og.affine)
-            nib.save(nft_img, 'Dashboard/apps/static/upload/predicted'  + '.nii.gz')
-
-            reader = ImageReader('./data', img_size=128, normalize=True, single_class=False)
-            viewer = ImageViewer3d(reader, mri_downsample=20)
-            fig = viewer.get_3d_scan(0, 't1')
-
-            return redirect('')
+                # reader = ImageReader('./data', img_size=128, normalize=True, single_class=False)
+                # viewer = ImageViewer3d(reader, mri_downsample=20)
+                # fig = viewer.get_3d_scan(0, 't1')
+                return redirect('/options/')
     else :
         form = InputForm()
     
     return render(request, "home/home.html", {"form": form, "msg": msg})
+
+
+def options(request) :
+    return render(request, "home/options.html")

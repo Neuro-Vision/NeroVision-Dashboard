@@ -62,7 +62,8 @@ class BratsDataset(Dataset):
     def __init__(self,df: pd.DataFrame, phase: str="predict", is_resize: bool=False, filename=None):
         self.phase = phase
         self.augmentations = get_augmentations(phase)
-        self.data_types = ['flair.nii', 't1.nii', 't1c.nii', 't2.nii']
+        # self.data_types = ['flair.nii', 't1.nii', 't1c.nii', 't2.nii']
+        self.data_types = filename
         self.is_resize = is_resize
         self.df = df
         self.filename = filename
@@ -100,7 +101,7 @@ class BratsDataset(Dataset):
         # id_ = self.df.loc[idx, 'Brats20ID']
         # root_path = self.df.loc[self.df['Brats20ID'] == id_]['path'].values[0]
         # load all modalities
-        root_path = 'segmentation/static/upload/'
+        root_path = 'apps/static/upload/'
         images = []
         for data_type in self.data_types:
             img_path = os.path.join(root_path, data_type)
@@ -294,7 +295,7 @@ class UNetV2:
     def __init__(self):
         self.model = UNet3d(in_channels=4, n_classes=3, n_channels=24)
         self.model.load_state_dict(torch.load("apps/saved_models/unet-v2.pth", map_location='cuda'))
-        self.model=self.model.cuda()
+        self.model=self.model
         # self.model = torch.load('segmentation/saved_models/unet-v2-without-gpu.pth')
         # self.data_loader = DataLoad()
         # self.model = model
@@ -320,11 +321,9 @@ class UNetV2:
               print(i)
               predictions = (probs >= threshold).float()
               print(type(predictions))
-              predictions =  predictions.cpu()
-              print(type(predictions))
               
               results["Id"].append(id_)
-              results["image"].append(imgs.cpu())
+              results["image"].append(imgs)
               results["Prediction"].append(predictions)
               # only 5 pars
               if (i > 5):    

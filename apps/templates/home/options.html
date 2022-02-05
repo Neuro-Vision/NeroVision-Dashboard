@@ -1,0 +1,97 @@
+{% extends "layouts/base.html" %} {% block title %} Dashboard {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %} {% block content %}
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card card-chart">
+            <div class="card-header ">
+                <div class="row">
+                    <div class="col-sm-6 text-left">
+                        <!-- <h5 class="card-category">None</h5> -->
+                        <h2 class="card-title">Performance</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card card-chart">
+            <div class="card-header">
+                <center>
+                    <h3 class="card-title"><b>Visualization</b></h3>
+                </center>
+                <center>
+                    <br>
+                    <section>
+                        <div class="w3-show-inline-block">
+                            <form method="POST" class="post-form" enctype="multipart/form-data">
+                                {% csrf_token %} {{ form.as_p }}
+                                <input type="text" value="animation" name="choice" hidden>
+                                <button type="Visualize" class=" btn btn-info" data-inline="true">Animation</button>
+                            </form>
+                        </div>
+                        <br>
+                        <div class="w3-show-inline-block">
+                            <form method="POST" class="post-form" enctype="multipart/form-data">
+                                {% csrf_token %} {{ form.as_p }}
+                                <input type="hidden" value="gif" name="choice" hidden>
+                                <button type="Visualize" class=" btn btn-warning" data-inline="true">View GIF</button>
+                            </form>
+                        </div>
+                        <br>
+                    </section>
+                </center>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card card-chart">
+            <div class="card-header">
+                <center>
+                    <h3 class="card-title"><b>Report</b>
+                </center>
+                </h3>
+                <center>
+                    <br>
+                    <div class="w3-show-inline-block">
+                        <form method="POST" class="post-form" enctype="multipart/form-data">
+                            {% csrf_token %} {{ form.as_p }}
+                            <input type="hidden" value="2d-slice" name="choice" hidden>
+                            <button type="Report" class=" btn btn-success">2-D Slizer</button>
+                        </form>
+                    </div>
+                    <br>
+                    <div class="w3-show-inline-block">
+                        <form method="POST" class="post-form" enctype="multipart/form-data">
+                            {% csrf_token %} {{ form.as_p }}
+                            <input type="hidden" value="location" name="choice" hidden>
+                            <button type="Report" class=" btn btn-primary">Tumour Location</button>
+                        </form>
+                    </div>
+                    <br>
+                </center>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<script>
+    $(document).ready(function() {
+        // Javascript method's body can be found in assets/js/demos.js
+        demo.initDashboardPageCharts();
+
+    });
+</script>
+
+{% endblock javascripts %}
