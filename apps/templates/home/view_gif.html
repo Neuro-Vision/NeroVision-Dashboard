@@ -1,0 +1,42 @@
+{% extends "layouts/base.html" %} {% block title %} Dashboard {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %} {% block content %}
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card card-chart">
+            <div class="card-header ">
+                <div class="row">
+                    <div class="col-sm-6 text-left">
+                        <!-- <h5 class="card-category">None</h5> -->
+                        <h2 class="card-title">3D GIF</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div>
+    {% autoescape off %}
+    <center>
+        <img height="90%" width="450 vh" src="../../static/gif_3d/{{gif}}" alt=" ">
+    </center>{% endautoescape %}
+</div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<script>
+    $(document).ready(function() {
+        // Javascript method's body can be found in assets/js/demos.js
+        demo.initDashboardPageCharts();
+
+    });
+</script>
+
+{% endblock javascripts %}

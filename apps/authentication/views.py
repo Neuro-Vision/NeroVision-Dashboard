@@ -3,8 +3,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from .forms import InputForm, LoginForm, SignUpForm
-from .utils import handle_uploaded_file
+from .utils import *
 import nibabel as nib
+from django.contrib.auth.decorators import login_required
 
 import numpy as np
 from .plot3d import *
@@ -96,9 +97,9 @@ def register_user(request):
 
 # def dashboard(request) :
 #     return render(request, "home/home.html")
-
+@login_required(login_url="/login/")
 def dashboard(request):
-    filenames = [] # to get list of uploaded filenames
+    filenames = []
     msg = None # to display any message if wrong input or any
     dummy = [] 
 
@@ -120,6 +121,7 @@ def dashboard(request):
                     filenames.append(f)    
 
                 print(filenames)
+                filenames = ["flair.nii.gz", "t1.nii.gz", "t1ce.nii.gz", "t2.nii.gz", "predicted.nii"]
 
                 # unet = UNetV2()
 
@@ -141,12 +143,56 @@ def dashboard(request):
                 # reader = ImageReader('./data', img_size=128, normalize=True, single_class=False)
                 # viewer = ImageViewer3d(reader, mri_downsample=20)
                 # fig = viewer.get_3d_scan(0, 't1')
+                request.session['filenames'] =  filenames
+
+                #creating animation code
+                reader = ImageReader('./data', img_size=128, normalize=True, single_class=False)
+                viewer = ImageViewer3d(reader, mri_downsample=20)
+                fig = viewer.get_3d_scan(0, filenames)
+                request.session['animation'] =  fig.to_html()
+
+                # creating GIF code
+                # predicted_data = nib.load(f"apps/static/predicted_files/{filenames[-1]}").get_data()
+                # data_to_3dgif = Image3dToGIF3d(img_dim = (120, 120, 78), binary=True, normalizing=False)
+                # transformed_data = data_to_3dgif.get_transformed_data(predicted_data)
+                # data_to_3dgif.plot_cube(
+                #     transformed_data,
+                #     title="Title",
+                #     make_gif=True,{fig}} 
+                #     path_to_save="apps/static/gif_3d/3d.gif"
+                # )
+
+                request.session['gif'] = "3d.gif"
+
                 return redirect('/options/')
     else :
         form = InputForm()
     
     return render(request, "home/home.html", {"form": form, "msg": msg})
 
-
+@login_required(login_url="/login/")
 def options(request) :
-    return render(request, "home/options.html")
+    if request.method == 'POST':
+        option = request.POST['choice']
+        if option == 'animation' :
+            return redirect('/plot3D/')
+        elif option == 'gif' :
+            return redirect('/gif3d/')
+        elif option == '2d-slice' :
+            return redirect('/2d_view/')
+        elif option == 'location' :
+            return redirect('/tumor_location/')
+    else : 
+        return render(request, "home/options.html")
+
+@login_required(login_url="/login/")
+def plot_3D(request):
+
+    fig = request.session["animation"]
+
+    return render(request, "home/animation.html", context={'fig': fig})
+
+@login_required(login_url="/login/")
+def view_gif_3D(request) :
+    gif_file_name = request.session['gif']
+    return render(request, "home/view_gif.html", context={"gif" : gif_file_name})

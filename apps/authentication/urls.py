@@ -4,13 +4,15 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from django.urls import path
-from .views import *
+from . import views
 from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
-    path('login/', login_view, name="login"),
-    path('register/', register_user, name="register"),
+    path('login/', views.login_view, name="login"),
+    path('register/', views.register_user, name="register"),
     path("logout/", LogoutView.as_view(), name="logout"),
-    path("dashboard/", dashboard, name="dashboard"),
-    path("options/", options, name="options")
+    path("dashboard/", views.dashboard, name="dashboard"),
+    path("options/", views.options, name="options"),
+    path("plot3D/", views.plot_3D, name="plot3D"),
+    path("gif3d/", views.view_gif_3D, name = "gif3d")
 ]

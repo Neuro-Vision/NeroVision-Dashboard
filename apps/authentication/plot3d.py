@@ -32,14 +32,16 @@ class ImageReader:
         self.single_class=single_class
         self.root=root
         
-    def read_file(self) -> dict:
-        scan_type = 'flair'
-        original = 'segmentation/static/upload/flair.nii'
-        raw_image = nib.load(original).get_fdata()
+    def read_file(self, filenames) -> dict:
+        original_file_name = filenames[0]
+        original_file_path = f'apps/static/upload/{original_file_name}'
+        raw_image = nib.load(original_file_path).get_fdata()
         # raw_mask = nib.load(original.replace(scan_type, 'seg (1)')).get_fdata()
-        raw_mask = nib.load('segmentation/static/upload/predicted.nii').get_fdata()
 
-        print(raw_mask)
+        predicted_file_name = filenames[-1]
+        raw_mask = nib.load(f'apps/static/predicted_files/{predicted_file_name}').get_fdata()
+
+        # print(raw_mask)
         processed_frames, processed_masks = [], []
         for frame_idx in range(raw_image.shape[2]):
             frame = raw_image[:, :, frame_idx]
@@ -60,11 +62,8 @@ class ImageReader:
             'orig_shape': raw_image.shape
         }
     
-    def load_patient_scan(self, idx:int, scan_type:str='flair') -> dict:
-        patient_id = str(idx).zfill(5)
-        # scan_filename = f'{self.root}/BraTS2021_{patient_id}/BraTS2021_{patient_id}_{scan_type}.nii.gz'
-        dummy_file = "flair.nii"
-        return self.read_file()
+    def load_patient_scan(self, idx:int, filenames:list) -> dict:
+        return self.read_file(filenames)
 
 import plotly.graph_objects as go
 import numpy as np
@@ -142,13 +141,25 @@ class ImageViewer3d():
             ),
         ], markers_created
     
-    def get_3d_scan(self, patient_idx:int, scan_type:str='flair') -> go.Figure:
-        scan = self.reader.load_patient_scan(patient_idx, scan_type)
+    def get_3d_scan(self, patient_idx:int, filenames:list) -> go.Figure:
+        scan = self.reader.load_patient_scan(patient_idx, filenames)
         data, num_markers = self.collect_patient_data(scan)
             
         fig = go.Figure(data=data)
+        # fig.update_layout(
+        #     title=f"[Patient id:{patient_idx}] brain MRI scan ({num_markers} points)",
+        #     legend_title="Pixel class (click to enable/disable)",
+        #     font=dict(
+        #         family="Courier New, monospace",
+        #         size=14,
+        #     ),
+        #     margin=dict(
+        #         l=0, r=0, b=0, t=30
+        #     ),
+        #     legend=dict(itemsizing='constant')
+        # )
+        
         fig.update_layout(
-            title=f"[Patient id:{patient_idx}] brain MRI scan ({num_markers} points)",
             legend_title="Pixel class (click to enable/disable)",
             font=dict(
                 family="Courier New, monospace",
@@ -159,8 +170,8 @@ class ImageViewer3d():
             ),
             legend=dict(itemsizing='constant')
         )
-        
-        fig.write_html("segmentation/3D Animation.html")
+
+        fig.write_html("apps/static/animation/3D Animation.html")
         
         return fig
 
