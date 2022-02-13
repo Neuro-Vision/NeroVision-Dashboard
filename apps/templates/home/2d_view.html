@@ -1,0 +1,93 @@
+{% extends "layouts/base.html" %} {% block title %} Dashboard {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %} {% block content %}
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card card-chart">
+            <div class="card-header ">
+                <div class="row">
+                    <div class="col-sm-6 text-left">
+                        <!-- <h5 class="card-category">None</h5> -->
+                        <h2 class="card-title">3D Animation</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card card-chart">
+            <div class="card-header">
+                <center>
+                    <h3 class="card-title"><b>Visualization</b></h3>
+                    <img src="data:image/png;base64, {{original|safe}} " height="350" width="350">
+                </center>
+                <br>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card card-chart">
+            <div class="card-header">
+                <center>
+                    <h3 class="card-title"><b>Visualization</b></h3>
+                    <img src="data:image/png;base64, {{all|safe}} " height="350" width="350">
+                </center>
+                <br>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card card-chart">
+            <div class="card-header">
+                <center>
+                    <h3 class="card-title"><b>Visualization</b></h3>
+                    <img src="data:image/png;base64, {{edema|safe}} " height="350" width="350">
+                </center>
+                <br>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card card-chart">
+            <div class="card-header">
+                <center>
+                    <h3 class="card-title"><b>Visualization</b></h3>
+                    <img src="data:image/png;base64, {{core|safe}} " height="350" width="350">
+                </center>
+                <br>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card card-chart">
+            <div class="card-header">
+                <center>
+                    <h3 class="card-title"><b>Visualization</b></h3>
+                    <img src="data:image/png;base64, {{enhancing|safe}} " height="350" width="350">
+                </center>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<script>
+    $(document).ready(function() {
+        // Javascript method's body can be found in assets/js/demos.js
+        demo.initDashboardPageCharts();
+
+    });
+</script>
+
+{% endblock javascripts %}

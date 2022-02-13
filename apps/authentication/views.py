@@ -179,9 +179,9 @@ def options(request) :
         elif option == 'gif' :
             return redirect('/gif3d/')
         elif option == '2d-slice' :
-            return redirect('/2d_view/')
+            return redirect('/2D_Visualization/')
         elif option == 'location' :
-            return redirect('/tumor_location/')
+            return redirect('/report/')
     else : 
         return render(request, "home/options.html")
 
@@ -196,3 +196,29 @@ def plot_3D(request):
 def view_gif_3D(request) :
     gif_file_name = request.session['gif']
     return render(request, "home/view_gif.html", context={"gif" : gif_file_name})
+
+
+def twoD_view(request) :
+
+        segmented = nib.load('apps/static/upload/BraTS2021_01654_seg.nii.gz').get_fdata()
+        flair_data = nib.load('apps/static/upload/BraTS2021_01654_flair.nii.gz').get_fdata()
+        print("Hii")
+        graph_plots = create_2d_plots(segmented, flair_data)
+
+        return render(request,'home/2d_view.html' , graph_plots)
+
+def tumor_location(request) : 
+    
+    segmented = nib.load('apps/static/upload/BraTS2021_01654_seg.nii.gz').get_fdata()
+    flair_data = nib.load('apps/static/upload/BraTS2021_01654_flair.nii.gz').get_fdata()
+    
+    output = find_tumor_location(segmented)
+    tumor_occupancy = occupancy(segmented, flair_data)
+
+    for i in tumor_occupancy.keys() :
+        output[i] = tumor_occupancy[i]
+
+    print(output, tumor_location)
+
+    return render(request, 'home/report.html', output)
+

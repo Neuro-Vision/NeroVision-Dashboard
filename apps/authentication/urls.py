@@ -14,5 +14,7 @@ urlpatterns = [
     path("dashboard/", views.dashboard, name="dashboard"),
     path("options/", views.options, name="options"),
     path("plot3D/", views.plot_3D, name="plot3D"),
-    path("gif3d/", views.view_gif_3D, name = "gif3d")
+    path("gif3d/", views.view_gif_3D, name = "gif3d"),
+    path("2D_Visualization/", views.twoD_view, name = "2D_Visualization"),
+    path("report/", views.tumor_location, name = "report")
 ]

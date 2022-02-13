@@ -5,10 +5,8 @@ from matplotlib import cm
 import matplotlib.animation as anim
 import matplotlib.patches as mpatches
 import matplotlib.gridspec as gridspec
-
 import seaborn as sns
 import imageio
-
 import nibabel as nib
 import pydicom as pdm
 import nilearn as nl
@@ -16,6 +14,12 @@ import nilearn.plotting as nlplt
 import h5py
 from tqdm import tqdm
 import time
+import matplotlib.pyplot as plt
+from io import BytesIO, StringIO
+import io
+import urllib
+import base64
+import cv2
 
 def handle_uploaded_file(f):  
     with open('apps/static/upload/'+f.name, 'wb+') as destination:  
@@ -150,3 +154,187 @@ class Image3dToGIF3d:
 
             else:
                 plt.show()
+
+def create_2d_plots(segmented, orignal_data) :
+        graph_plots = dict()
+        origImage = orignal_data
+        start_slice = 60
+
+        # Copy is Important
+
+        core = segmented.copy()
+        core[core != 1] = 0
+
+        edema = segmented.copy()
+        edema[edema != 2]= 0
+
+        enhancing = segmented.copy()
+        enhancing[enhancing != 4] = 0
+
+        context = orignal_data
+
+        plt.switch_backend("AGG")
+
+        #for original image
+        plt.figure(figsize=(8,5))
+        plt.title("Orignal Image", fontsize=30)
+        plt.imshow(cv2.resize(context[:,:,start_slice], (128,128)), cmap="gray", interpolation='none')
+        plt.tight_layout()
+        buffer = BytesIO()
+        plt.savefig(buffer, format="png")
+        buffer.seek(0)
+        img_png = buffer.getvalue()
+        graph = base64.b64encode(img_png)
+        graph = graph.decode('utf-8')
+        buffer.close()
+        graph_plots['original']=graph
+        plt.close()
+
+
+
+        #for all classes image
+        plt.figure(figsize=(8,5))
+        plt.title("All Classes", fontsize=30)
+        plt.imshow(segmented[:,:, start_slice], cmap="gray")
+        print(segmented[:,:, start_slice].shape)
+        plt.tight_layout()
+        buffer = BytesIO()
+        plt.savefig(buffer, format="png")
+        buffer.seek(0)
+        img_png = buffer.getvalue()
+        graph = base64.b64encode(img_png)
+        graph = graph.decode('utf-8')
+        buffer.close()
+        graph_plots['all']=graph
+        plt.close()
+
+        #for edema image
+        plt.figure(figsize=(8,5)) 
+        plt.title("Edema Image", fontsize=30)
+        plt.imshow(edema[:, :, start_slice], cmap="gray")
+        plt.tight_layout()
+        buffer = BytesIO()
+        plt.savefig(buffer, format="png")
+        buffer.seek(0)
+        img_png = buffer.getvalue()
+        graph = base64.b64encode(img_png)
+        graph = graph.decode('utf-8')
+        buffer.close()
+        graph_plots['edema']=graph
+        plt.close()
+
+        #for core image
+        plt.figure(figsize=(8,5))
+        plt.title("Core Image", fontsize=30)
+        plt.imshow(core[:,:, start_slice], cmap="gray")
+        plt.tight_layout()
+        buffer = BytesIO()
+        plt.savefig(buffer, format="png")
+        buffer.seek(0)
+        img_png = buffer.getvalue()
+        graph = base64.b64encode(img_png)
+        graph = graph.decode('utf-8')
+        buffer.close()
+        graph_plots['core']=graph
+        plt.close()
+
+        #for enhancing image
+        plt.figure(figsize=(8,5))
+        plt.title("Enhancing Image", fontsize=30)
+        plt.imshow(enhancing[:,:, start_slice], cmap="gray")
+        plt.tight_layout()
+        buffer = BytesIO()
+        plt.savefig(buffer, format="png")
+        buffer.seek(0)
+        img_png = buffer.getvalue()
+        graph = base64.b64encode(img_png)
+        graph = graph.decode('utf-8')
+        buffer.close()
+        graph_plots['enhancing']=graph
+        plt.close()
+
+        return graph_plots
+    
+def find_tumor_location(segmented):
+
+    max_axial = 0 # saves max non zero value
+    max_slice = 0 # saves max non zero slice number
+    output = {}
+
+    for i in range(0,155):
+        total_tumor_density =  np.count_nonzero(segmented[:, :, i])
+        if total_tumor_density > max_axial :
+            max_axial = total_tumor_density
+            max_slice = i
+
+    middle_range = segmented.shape[2] * 0.2
+    rest_range = segmented.shape[2] * 0.4
+
+    if max_slice <  rest_range : 
+        output['Axial']  = "bottom"
+    elif max_slice > rest_range and max_slice < (rest_range + middle_range) :
+        output['Axial']  = "middle"
+    else :
+        output['Axial']  = "top"
+
+
+    # for Coronal (Front to Back)
+    max_coronal = 0
+    max_slice = 0
+
+    for i in range(0,240) :
+        total_tumor_density =  np.count_nonzero(np.rot90(segmented[:, i, :]))
+
+    if total_tumor_density > max_coronal :
+        max_coronal = total_tumor_density
+        max_slice = i
+
+
+    middle_range = segmented.shape[1] * 0.2
+    rest_range = segmented.shape[1] * 0.4
+
+    if max_slice <  rest_range : 
+        output['Coronal']  = "Front"
+    elif max_slice > rest_range and max_slice < (rest_range + middle_range) :
+        output['Coronal']  = "Middle"
+    else :
+        output['Coronal']  = "Back"
+
+
+    # For Saggital (Right to Left)
+    max_saggital = 0
+    max_slice = 0
+
+    for i in range(0,240) :
+        total_tumor_density =  np.count_nonzero(np.rot90(segmented[i, :, :]))
+    if total_tumor_density > max_saggital :
+        max_saggital = total_tumor_density
+        max_slice = i
+
+    middle_range = segmented.shape[0] * 0.2
+    rest_range = segmented.shape[0] * 0.4
+
+    if max_slice <  rest_range : 
+        output['Saggital']  = "right"
+    elif max_slice > rest_range and max_slice < (rest_range + middle_range) :
+        output['Saggital']  = "middle"
+    else :
+        output['Saggital']  = "left"
+
+    return output
+
+def occupancy(label_array, image_data) :
+    density = dict()
+
+    density["tumor_density"] = round((np.count_nonzero(label_array) / np.count_nonzero(image_data)) * 100, 2)
+
+    enhancing = label_array[label_array == 1]
+    density["enhancing"] = round((np.count_nonzero(enhancing) / np.count_nonzero(image_data)) * 100, 2)
+
+    edema = label_array[label_array == 2]
+    density["edema"] = round((np.count_nonzero(edema) / np.count_nonzero(image_data)) * 100, 2)
+
+    non_enhancing = label_array[label_array == 4]
+    density["non_enhancing"] = round((np.count_nonzero(non_enhancing) / np.count_nonzero(image_data)) * 100, 2)
+
+    return density

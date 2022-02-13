@@ -1,0 +1,93 @@
+{% extends "layouts/base.html" %} {% block title %} Dashboard {% endblock %}
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %} {% block content %}
+
+<div class="row">
+
+    <div class="col-12">
+        <div class="card card-chart">
+            <div class="card-header ">
+                <div class="row">
+                    <div class="col-sm-6 text-left">
+                        <!-- <h5 class="card-category">None</h5> -->
+                        <h2 class="card-title">Report</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card card-chart">
+            <div class="card-header">
+                <center>
+                    <h2 class="card-title"><b>Tumor Location</b></h2>
+                    <h4>Tumor is located at {{Coronal}}-{{Saggital}} and {{Axial}} side of brain.</h4>
+                </center>
+                <br>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card card-chart">
+            <div class="card-header">
+                <center>
+                    <h3 class="card-title"><b>Whole Tumor to Brain Occupancy</b></h3>
+                    <h4>{{tumor_density}}%</h4>
+                </center>
+                <br>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card card-chart">
+            <div class="card-header">
+                <center>
+                    <h3 class="card-title"><b>Edema to Tumor Occupancy</b></h3>
+                    <h4>{{edema}}%</h4>
+                </center>
+                <br>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card card-chart">
+            <div class="card-header">
+                <center>
+                    <h3 class="card-title"><b>Enhancing to Tumor Occupancy</b></h3>
+                    <h4>{{enhancing}}%</h4>
+                </center>
+                <br>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card card-chart">
+            <div class="card-header">
+                <center>
+                    <h3 class="card-title"><b>Non-Enhancing to Tumor Occupancy</b></h3>
+                    <h4>{{non_enhancing}}%</h4>
+                </center>
+                <br>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<script>
+    $(document).ready(function() {
+        // Javascript method's body can be found in assets/js/demos.js
+        demo.initDashboardPageCharts();
+
+    });
+</script>
+
+{% endblock javascripts %}
