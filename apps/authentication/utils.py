@@ -20,6 +20,7 @@ import io
 import urllib
 import base64
 import cv2
+import os
 
 def handle_uploaded_file(f):  
     with open('apps/static/upload/'+f.name, 'wb+') as destination:  
@@ -156,8 +157,14 @@ class Image3dToGIF3d:
                 plt.show()
 
 def create_2d_plots(segmented, orignal_data) :
+
+        path = "apps/static/2d_files/"
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        user_id = "user1"
+        if(not os.path.exists((BASE_DIR + "/static/2d_files/" + user_id))) :
+            os.mkdir(BASE_DIR + "/static/2d_files/" + user_id)
+        
         graph_plots = dict()
-        origImage = orignal_data
         start_slice = 60
 
         # Copy is Important
@@ -188,6 +195,7 @@ def create_2d_plots(segmented, orignal_data) :
         graph = graph.decode('utf-8')
         buffer.close()
         graph_plots['original']=graph
+        plt.savefig(path + user_id + '/orignal.png')
         plt.close()
 
 
@@ -206,6 +214,7 @@ def create_2d_plots(segmented, orignal_data) :
         graph = graph.decode('utf-8')
         buffer.close()
         graph_plots['all']=graph
+        plt.savefig(path + user_id + '/all_classes.png')
         plt.close()
 
         #for edema image
@@ -221,6 +230,7 @@ def create_2d_plots(segmented, orignal_data) :
         graph = graph.decode('utf-8')
         buffer.close()
         graph_plots['edema']=graph
+        plt.savefig(path + user_id + '/edema.png')
         plt.close()
 
         #for core image
@@ -236,6 +246,7 @@ def create_2d_plots(segmented, orignal_data) :
         graph = graph.decode('utf-8')
         buffer.close()
         graph_plots['core']=graph
+        plt.savefig(path + user_id + '/core.png')
         plt.close()
 
         #for enhancing image
@@ -251,6 +262,7 @@ def create_2d_plots(segmented, orignal_data) :
         graph = graph.decode('utf-8')
         buffer.close()
         graph_plots['enhancing']=graph
+        plt.savefig(path + user_id + '/enhancing.png')
         plt.close()
 
         return graph_plots

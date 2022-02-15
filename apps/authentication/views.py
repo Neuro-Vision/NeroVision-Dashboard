@@ -46,6 +46,11 @@ from io import StringIO
 import io
 import urllib, base64
 from io import BytesIO
+import shutil
+
+
+#Define Platform
+platform = "local"
 
 
 def login_view(request):
@@ -95,15 +100,11 @@ def register_user(request):
     return render(request, "accounts/register.html", {"form": form, "msg": msg, "success": success})
 
 
-# def dashboard(request) :
-#     return render(request, "home/home.html")
 @login_required(login_url="/login/")
 def dashboard(request):
     filenames = []
     msg = None # to display any message if wrong input or any
     dummy = [] 
-
-    platform = "local"
 
     if request.method == "POST":
         #If form reques method is post then load the form with post and file requests
@@ -165,6 +166,8 @@ def dashboard(request):
                 request.session['gif'] = "3d.gif"
 
                 return redirect('/options/')
+ 
+    
     else :
         form = InputForm()
     
@@ -222,3 +225,69 @@ def tumor_location(request) :
 
     return render(request, 'home/report.html', output)
 
+def download_animation(request):
+    # Define Django project base directory
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    filename = '3D Animation.html'
+    # Define the full file path
+    filepath = BASE_DIR + '/static/animation/' + filename
+    # Open the file for reading content
+    path = open(filepath, 'rb')
+    # Set the mime type
+    mime_type, _ = mimetypes.guess_type(filepath)
+    # Set the return value of the HttpResponse
+    response = HttpResponse(path, content_type=mime_type)
+    # Set the HTTP header for sending to browser
+    response['Content-Disposition'] = "attachment; filename=%s" % filename
+    # Return the response value
+    return response
+
+def download_gif(request):
+    # Define Django project base directory
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    filename = '3d.gif'
+    # Define the full file path
+    filepath = BASE_DIR + '/static/gif_3d/' + filename
+    # Open the file for reading content
+    path = open(filepath, 'rb')
+    # Set the mime type
+    mime_type, _ = mimetypes.guess_type(filepath)
+    # Set the return value of the HttpResponse
+    response = HttpResponse(path, content_type=mime_type)
+    # Set the HTTP header for sending to browser
+    response['Content-Disposition'] = "attachment; filename=%s" % filename
+    # Return the response value
+    return response
+
+def download_2d_plots(filename):
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    user_id = "user1"
+    # filename = '3d.gif'
+    filepath = BASE_DIR + '/static/2d_files/' 
+    shutil.make_archive(filepath + user_id , "zip" , filepath + user_id)
+    path = open(filepath + user_id + ".zip", 'rb')
+    mime_type, _ = mimetypes.guess_type(filepath)
+    response = HttpResponse(path, content_type=mime_type)
+    response['Content-Disposition'] = "attachment; filename=%s" % (user_id + ".zip")
+    return response
+
+def delete_files(request) :
+    if platform == "local" :
+
+        BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        user_id = "user1"
+
+        #remove animation
+        animation_file = "3D Animation.html"
+        os.remove(BASE_DIR + "/static/animation/" + animation_file)
+
+        #remove 3D Gif
+        gif_file = "3d.gif"
+        os.remove(BASE_DIR + "/static/gif_3d/" + gif_file)
+
+        #remove 2D Plots
+        shutil.rmtree(BASE_DIR + "/static/2d_files/" + user_id, ignore_errors=True)
+        zip_file = user_id + ".zip"
+        os.remove(BASE_DIR + "/static/2d_files/" + zip_file)
+
+        return redirect('/logout/')
