@@ -50,7 +50,7 @@ import shutil
 
 
 #Define Platform
-platform = "local"
+platform = "colab"
 
 
 def login_view(request):
@@ -166,8 +166,60 @@ def dashboard(request):
                 request.session['gif'] = "3d.gif"
 
                 return redirect('/options/')
- 
-    
+   
+            if platform == "colab" :
+                    for filename in request.FILES:
+                        print(filename)
+                        f = handle_uploaded_file(request.FILES[filename])
+                        nii_file = nib.load("apps/static/upload/"+f)
+                        dummy.append(nii_file.get_fdata()) # it gets data from loaded nii file
+                        filenames.append(f)    
+
+                    print(filenames)
+                    filenames = ["flair.nii.gz", "t1.nii.gz", "t1ce.nii.gz", "t2.nii.gz", "predicted.nii"]
+
+                    unet = UNetV2()
+
+                    prediction = unet.predict(filenames)['Prediction'][0]
+                    print(type(prediction))
+                    # print(prediction)
+                    prediction = (prediction).squeeze().cpu().detach().numpy()
+                    prediction = np.moveaxis(prediction, (0, 1, 2, 3), (0, 3, 2, 1))
+                    wt, tc, et = prediction
+                    print(wt.shape, tc.shape, et.shape)
+                    prediction = (wt + tc + et)
+                    prediction = np.clip(prediction, 0, 1)
+                    print(prediction.shape)
+                    print(np.unique(prediction))
+                    og = nib.load('apps/static/upload/flair.nii.gz')
+                    nft_img = nib.Nifti1Image(prediction, og.affine)
+                    nib.save(nft_img, 'apps/static/upload/predicted'  + '.nii.gz')
+
+                    reader = ImageReader('./data', img_size=128, normalize=True, single_class=False)
+                    viewer = ImageViewer3d(reader, mri_downsample=20)
+                    fig = viewer.get_3d_scan(0, 't1')
+                    request.session['filenames'] =  filenames
+
+                    #creating animation code
+                    reader = ImageReader('./data', img_size=128, normalize=True, single_class=False)
+                    viewer = ImageViewer3d(reader, mri_downsample=20)
+                    fig = viewer.get_3d_scan(0, filenames)
+                    request.session['animation'] =  fig.to_html()
+
+                    # creating GIF code
+                    # predicted_data = nib.load(f"apps/static/predicted_files/{filenames[-1]}").get_data()
+                    # data_to_3dgif = Image3dToGIF3d(img_dim = (120, 120, 78), binary=True, normalizing=False)
+                    # transformed_data = data_to_3dgif.get_transformed_data(predicted_data)
+                    # data_to_3dgif.plot_cube(
+                    #     transformed_data,
+                    #     title="Title",
+                    #     make_gif=True,{fig}} 
+                    #     path_to_save="apps/static/gif_3d/3d.gif"
+                    # )
+
+                    request.session['gif'] = "3d.gif"
+
+                    return redirect('/options/')            
     else :
         form = InputForm()
     
