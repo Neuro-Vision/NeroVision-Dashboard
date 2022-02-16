@@ -50,7 +50,7 @@ import shutil
 
 
 #Define Platform
-platform = "local"
+platform = "colab"
 
 
 def login_view(request):
