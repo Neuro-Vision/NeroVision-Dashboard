@@ -156,11 +156,11 @@ class Image3dToGIF3d:
             else:
                 plt.show()
 
-def create_2d_plots(segmented, orignal_data) :
+def create_2d_plots(user_id, segmented, orignal_data) :
 
         path = "apps/static/2d_files/"
+
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        user_id = "user1"
         if(not os.path.exists((BASE_DIR + "/static/2d_files/" + user_id))) :
             os.mkdir(BASE_DIR + "/static/2d_files/" + user_id)
         

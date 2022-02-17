@@ -10,7 +10,7 @@ from django.contrib.auth.views import LogoutView
 urlpatterns = [
     path('login/', views.login_view, name="login"),
     path('register/', views.register_user, name="register"),
-    path("logout/", LogoutView.as_view(), name="logout"), 
+    path("signout/", LogoutView.as_view(), name="logout"), 
     path("dashboard/", views.dashboard, name="dashboard"),
     path("options/", views.options, name="options"),
     path("plot3D/", views.plot_3D, name="plot3D"),
@@ -20,5 +20,5 @@ urlpatterns = [
     path('download_animation/', views.download_animation, name='download_animation'),
     path('download_gif/', views.download_gif, name='download_gif'),
     path('download_2d/', views.download_2d_plots, name='fetch_2d_plots'),
-    path('delete_files/', views.delete_files, name='delete_files'),
+    path('logout/', views.delete_files, name='delete_files'),
 ]

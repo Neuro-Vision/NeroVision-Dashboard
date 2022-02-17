@@ -50,7 +50,7 @@ import shutil
 
 
 #Define Platform
-platform = "colab"
+platform = "local"
 
 
 def login_view(request):
@@ -122,6 +122,7 @@ def dashboard(request):
                     filenames.append(f)    
 
                 print(filenames)
+                print(request.user.id)
                 filenames = ["flair.nii.gz", "t1.nii.gz", "t1ce.nii.gz", "t2.nii.gz", "predicted.nii"]
 
                 # unet = UNetV2()
@@ -167,7 +168,7 @@ def dashboard(request):
 
                 return redirect('/options/')
    
-            if platform == "colab" :
+            if platform == "shubham" :
                     for filename in request.FILES:
                         print(filename)
                         f = handle_uploaded_file(request.FILES[filename])
@@ -176,7 +177,7 @@ def dashboard(request):
                         filenames.append(f)    
 
                     print(filenames)
-                    filenames = ["flair.nii.gz", "t1.nii.gz", "t1ce.nii.gz", "t2.nii.gz", "predicted.nii"]
+                    # filenames = ["flair.nii.gz", "t1.nii.gz", "t1ce.nii.gz", "t2.nii.gz", "predicted.nii"]
 
                     unet = UNetV2()
 
@@ -193,8 +194,9 @@ def dashboard(request):
                     print(np.unique(prediction))
                     og = nib.load('apps/static/upload/flair.nii.gz')
                     nft_img = nib.Nifti1Image(prediction, og.affine)
-                    nib.save(nft_img, 'apps/static/upload/predicted'  + '.nii.gz')
-
+                    predicted_filename = str(request.user.id) + '_predicted'  + '.nii.gz'
+                    nib.save(nft_img, 'apps/static/upload/' + predicted_filename)
+                    filenames.append(predicted_filename)
                     reader = ImageReader('./data', img_size=128, normalize=True, single_class=False)
                     viewer = ImageViewer3d(reader, mri_downsample=20)
                     fig = viewer.get_3d_scan(0, 't1')
@@ -203,21 +205,22 @@ def dashboard(request):
                     #creating animation code
                     reader = ImageReader('./data', img_size=128, normalize=True, single_class=False)
                     viewer = ImageViewer3d(reader, mri_downsample=20)
-                    fig = viewer.get_3d_scan(0, filenames)
+                    fig = viewer.get_3d_scan(request, 0, filenames)
                     request.session['animation'] =  fig.to_html()
 
                     # creating GIF code
-                    # predicted_data = nib.load(f"apps/static/predicted_files/{filenames[-1]}").get_data()
-                    # data_to_3dgif = Image3dToGIF3d(img_dim = (120, 120, 78), binary=True, normalizing=False)
-                    # transformed_data = data_to_3dgif.get_transformed_data(predicted_data)
-                    # data_to_3dgif.plot_cube(
-                    #     transformed_data,
-                    #     title="Title",
-                    #     make_gif=True,{fig}} 
-                    #     path_to_save="apps/static/gif_3d/3d.gif"
-                    # )
+                    predicted_data = nib.load(f"apps/static/predicted_files/{filenames[-1]}").get_data()
+                    data_to_3dgif = Image3dToGIF3d(img_dim = (120, 120, 78), binary=True, normalizing=False)
+                    transformed_data = data_to_3dgif.get_transformed_data(predicted_data)
+                    filename = str(request.user.id) + "_3d_gif.gif"
+                    data_to_3dgif.plot_cube(
+                        transformed_data,
+                        title="Title",
+                        make_gif=True,
+                        path_to_save="apps/static/gif_3d/" + filename
+                    )
 
-                    request.session['gif'] = "3d.gif"
+                    request.session['gif'] = filename
 
                     return redirect('/options/')            
     else :
@@ -258,7 +261,7 @@ def twoD_view(request) :
         segmented = nib.load('apps/static/upload/BraTS2021_01654_seg.nii.gz').get_fdata()
         flair_data = nib.load('apps/static/upload/BraTS2021_01654_flair.nii.gz').get_fdata()
         print("Hii")
-        graph_plots = create_2d_plots(segmented, flair_data)
+        graph_plots = create_2d_plots(str(request.user.id), segmented, flair_data)
 
         return render(request,'home/2d_view.html' , graph_plots)
 
@@ -280,7 +283,7 @@ def tumor_location(request) :
 def download_animation(request):
     # Define Django project base directory
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    filename = '3D Animation.html'
+    filename = str(request.user.id) + "_animation.html"
     # Define the full file path
     filepath = BASE_DIR + '/static/animation/' + filename
     # Open the file for reading content
@@ -297,7 +300,7 @@ def download_animation(request):
 def download_gif(request):
     # Define Django project base directory
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    filename = '3d.gif'
+    filename = str(request.user.id) + "_3d_gif.gif"
     # Define the full file path
     filepath = BASE_DIR + '/static/gif_3d/' + filename
     # Open the file for reading content
@@ -311,9 +314,9 @@ def download_gif(request):
     # Return the response value
     return response
 
-def download_2d_plots(filename):
+def download_2d_plots(request):
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    user_id = "user1"
+    user_id = str(request.user.id) 
     # filename = '3d.gif'
     filepath = BASE_DIR + '/static/2d_files/' 
     shutil.make_archive(filepath + user_id , "zip" , filepath + user_id)
@@ -327,14 +330,14 @@ def delete_files(request) :
     if platform == "local" :
 
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        user_id = "user1"
+        user_id = request.user.id
 
         #remove animation
-        animation_file = "3D Animation.html"
+        animation_file = str(request.user.id) + "_animation.html"
         os.remove(BASE_DIR + "/static/animation/" + animation_file)
 
         #remove 3D Gif
-        gif_file = "3d.gif"
+        gif_file = str(request.user.id) + "_3d_gif.gif"
         os.remove(BASE_DIR + "/static/gif_3d/" + gif_file)
 
         #remove 2D Plots

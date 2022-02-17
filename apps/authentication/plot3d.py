@@ -141,7 +141,7 @@ class ImageViewer3d():
             ),
         ], markers_created
     
-    def get_3d_scan(self, patient_idx:int, filenames:list) -> go.Figure:
+    def get_3d_scan(self, request, patient_idx:int, filenames:list) -> go.Figure:
         scan = self.reader.load_patient_scan(patient_idx, filenames)
         data, num_markers = self.collect_patient_data(scan)
             
@@ -171,7 +171,8 @@ class ImageViewer3d():
             legend=dict(itemsizing='constant')
         )
 
-        fig.write_html("apps/static/animation/3D Animation.html")
+        filename = str(request.user.id) + "_animation.html"
+        fig.write_html("apps/static/animation/" + filename )
         
         return fig
 
