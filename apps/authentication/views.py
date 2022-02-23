@@ -123,7 +123,7 @@ def dashboard(request):
 
                 print(filenames)
                 print(request.user.id)
-                filenames = ["flair.nii.gz", "t1.nii.gz", "t1ce.nii.gz", "t2.nii.gz", "predicted.nii"]
+                filenames = ["flair.nii.gz", "t1.nii.gz", "t1ce.nii.gz", "t2.nii.gz", "seg (1).nii.gz"]
 
                 # unet = UNetV2()
 
@@ -150,7 +150,7 @@ def dashboard(request):
                 #creating animation code
                 reader = ImageReader('./data', img_size=128, normalize=True, single_class=False)
                 viewer = ImageViewer3d(reader, mri_downsample=20)
-                fig = viewer.get_3d_scan(0, filenames)
+                fig = viewer.get_3d_scan(request, 0, filenames)
                 request.session['animation'] =  fig.to_html()
 
                 # creating GIF code
@@ -188,6 +188,11 @@ def dashboard(request):
                     prediction = np.moveaxis(prediction, (0, 1, 2, 3), (0, 3, 2, 1))
                     wt, tc, et = prediction
                     print(wt.shape, tc.shape, et.shape)
+                    tc[tc == 1] = 3
+                    et[tc == 3] = 0
+                    et[et == 1] = 2
+                    wt[tc == 3] = 0
+                    wt[et == 2] = 0
                     prediction = (wt + tc + et)
                     prediction = np.clip(prediction, 0, 1)
                     print(prediction.shape)
