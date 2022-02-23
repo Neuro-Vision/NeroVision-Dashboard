@@ -6,7 +6,7 @@ from .forms import InputForm, LoginForm, SignUpForm
 from .utils import *
 import nibabel as nib
 from django.contrib.auth.decorators import login_required
-
+from django.views.decorators.csrf import csrf_exempt
 import numpy as np
 from .plot3d import *
 from django.urls import reverse
@@ -52,7 +52,7 @@ import shutil
 #Define Platform
 platform = "local"
 
-
+@csrf_exempt
 def login_view(request):
     form = LoginForm(request.POST or None)
 
@@ -74,7 +74,7 @@ def login_view(request):
 
     return render(request, "accounts/login.html", {"form": form, "msg": msg})
 
-
+@csrf_exempt
 def register_user(request):
     msg = None
     success = False
