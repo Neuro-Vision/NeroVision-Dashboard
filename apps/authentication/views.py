@@ -123,7 +123,7 @@ def dashboard(request):
                     filenames.append(f)    
 
                 print(filenames)
-                print(request.user.id)
+                # print(request.user.id)
                 filenames = ["flair.nii.gz", "t1.nii.gz", "t1ce.nii.gz", "t2.nii.gz", "seg (1).nii.gz"]
 
                 # unet = UNetV2()
