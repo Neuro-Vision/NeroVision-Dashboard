@@ -59,11 +59,12 @@ def login_view(request):
     msg = None
 
     if request.method == "POST":
-
+        print("hello")
         if form.is_valid():
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
             user = authenticate(username=username, password=password)
+            print("hello")
             if user is not None:
                 login(request, user)
                 return redirect("/")
