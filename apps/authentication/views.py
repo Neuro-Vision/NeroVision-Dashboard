@@ -101,7 +101,7 @@ def register_user(request):
     return render(request, "accounts/register.html", {"form": form, "msg": msg, "success": success})
 
 
-@login_required(login_url="/login/")
+# @login_required(login_url="/login/")
 def dashboard(request):
     filenames = []
     msg = None # to display any message if wrong input or any
