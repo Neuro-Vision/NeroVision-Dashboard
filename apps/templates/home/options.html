@@ -9,9 +9,9 @@
         <div class="card card-chart">
             <div class="card-header ">
                 <div class="row">
-                    <div class="col-sm-6 text-left">
+                    <div class="col-sm-12 text-left">
                         <!-- <h5 class="card-category">None</h5> -->
-                        <h2 class="card-title">Performance</h2>
+                        <h2 class="card-title">Results</h2>
                     </div>
                 </div>
             </div>
@@ -51,7 +51,7 @@
                                 <form method="POST" class="post-form" enctype="multipart/form-data">
                                     {% csrf_token %} {{ form.as_p }}
                                     <input type="hidden" value="2d-slice" name="choice" hidden>
-                                    <button type="Report" class=" btn btn-success">2-D Slizer</button>
+                                    <button type="Report" class=" btn btn-success">2-D Plots</button>
                                 </form>
                             </div>
                             <br>
@@ -74,7 +74,7 @@
                             <form method="POST" class="post-form" enctype="multipart/form-data">
                                 {% csrf_token %} {{ form.as_p }}
                                 <input type="hidden" value="location" name="choice" hidden>
-                                <button type="Report" class=" btn btn-primary">Tumour Location</button>
+                                <button type="Report" class=" btn btn-primary">View</button>
                             </form>
                         </div>
                         <br>

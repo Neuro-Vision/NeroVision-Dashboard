@@ -107,7 +107,7 @@ class ImageViewer3d():
         shape_offset = image.shape[1]/orig_dim
         # 1/1, 1/3 and 1/5 pixels for tumor tissue classes 1(core), 2(invaded) and 4(enhancing)
         sampling = {
-            1: 1, 2: 3, 4: 5
+            1: 1, 2: 3, 3: 5
         }
         for class_idx in sampling:
             z, x, y = (image == class_idx).nonzero()
@@ -136,7 +136,7 @@ class ImageViewer3d():
                 hover='all', name='Peritumoral invaded tissue'
             ),                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
             generate_3d_scatter(
-                **tumors[4], opacity=0.4,
+                **tumors[3], opacity=0.4,
                 hover='all', name='GD-enhancing tumor'
             ),
         ], markers_created

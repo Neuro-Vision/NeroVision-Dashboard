@@ -67,7 +67,7 @@ def login_view(request):
             print("hello")
             if user is not None:
                 login(request, user)
-                return redirect("/")
+                return redirect("/dashboard/")
             else:
                 msg = 'Invalid credentials'
         else:
@@ -101,7 +101,7 @@ def register_user(request):
     return render(request, "accounts/register.html", {"form": form, "msg": msg, "success": success})
 
 
-# @login_required(login_url="/login/")
+@login_required(login_url="/login/")
 def dashboard(request):
     filenames = []
     msg = None # to display any message if wrong input or any
@@ -123,8 +123,8 @@ def dashboard(request):
                     filenames.append(f)    
 
                 print(filenames)
-                # print(request.user.id)
-                filenames = ["flair.nii.gz", "t1.nii.gz", "t1ce.nii.gz", "t2.nii.gz", "seg (1).nii.gz"]
+                print(request.user.id)
+                filenames = ["flair.nii.gz", "t1.nii.gz", "t1ce.nii.gz", "t2.nii.gz", "3_predicted.nii.gz"]
 
                 # unet = UNetV2()
 
@@ -165,7 +165,7 @@ def dashboard(request):
                 #     path_to_save="apps/static/gif_3d/3d.gif"
                 # )
 
-                request.session['gif'] = "3d.gif"
+                request.session['gif'] = "3_3d_gif.gif"
 
                 return redirect('/options/')
    
@@ -264,8 +264,8 @@ def view_gif_3D(request) :
 
 def twoD_view(request) :
 
-        segmented = nib.load('apps/static/upload/BraTS2021_01654_seg.nii.gz').get_fdata()
-        flair_data = nib.load('apps/static/upload/BraTS2021_01654_flair.nii.gz').get_fdata()
+        segmented = nib.load('apps/static/predicted_files/3_predicted.nii.gz').get_fdata()
+        flair_data = nib.load('apps/static/upload/BraTS2021_00051_flair.nii.gz').get_fdata()
         print("Hii")
         graph_plots = create_2d_plots(str(request.user.id), segmented, flair_data)
 
@@ -273,8 +273,8 @@ def twoD_view(request) :
 
 def tumor_location(request) : 
     
-    segmented = nib.load('apps/static/upload/BraTS2021_01654_seg.nii.gz').get_fdata()
-    flair_data = nib.load('apps/static/upload/BraTS2021_01654_flair.nii.gz').get_fdata()
+    segmented = nib.load('apps/static/predicted_files/3_predicted.nii.gz').get_fdata()
+    flair_data = nib.load('apps/static/upload/BraTS2021_00051_flair.nii.gz').get_fdata()
     
     output = find_tumor_location(segmented)
     tumor_occupancy = occupancy(segmented, flair_data)
@@ -351,4 +351,4 @@ def delete_files(request) :
         zip_file = user_id + ".zip"
         os.remove(BASE_DIR + "/static/2d_files/" + zip_file)
 
-        return redirect('/logout/')
+        return redirect('/signout/')

@@ -169,14 +169,14 @@ def create_2d_plots(user_id, segmented, orignal_data) :
 
         # Copy is Important
 
-        core = segmented.copy()
-        core[core != 1] = 0
-
         edema = segmented.copy()
-        edema[edema != 2]= 0
+        edema[edema != 1]= 0
 
         enhancing = segmented.copy()
-        enhancing[enhancing != 4] = 0
+        enhancing[enhancing != 2] = 0
+
+        core = segmented.copy()
+        core[core != 3] = 0
 
         context = orignal_data
 
@@ -340,13 +340,13 @@ def occupancy(label_array, image_data) :
 
     density["tumor_density"] = round((np.count_nonzero(label_array) / np.count_nonzero(image_data)) * 100, 2)
 
-    enhancing = label_array[label_array == 1]
+    enhancing = label_array[label_array == 2]
     density["enhancing"] = round((np.count_nonzero(enhancing) / np.count_nonzero(image_data)) * 100, 2)
 
-    edema = label_array[label_array == 2]
+    edema = label_array[label_array == 1]
     density["edema"] = round((np.count_nonzero(edema) / np.count_nonzero(image_data)) * 100, 2)
 
-    non_enhancing = label_array[label_array == 4]
-    density["non_enhancing"] = round((np.count_nonzero(non_enhancing) / np.count_nonzero(image_data)) * 100, 2)
+    core = label_array[label_array == 3]
+    density["core"] = round((np.count_nonzero(core) / np.count_nonzero(image_data)) * 100, 2)
 
     return density
