@@ -52,6 +52,9 @@ import shutil
 #Define Platform
 platform = "local"
 
+def homepage(request) :
+    return render(request, 'home/homepage.html', {})
+
 @csrf_exempt
 def login_view(request):
     form = LoginForm(request.POST or None)
